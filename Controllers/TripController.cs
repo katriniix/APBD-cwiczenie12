@@ -23,6 +23,24 @@ public class TripController : ControllerBase
         return Ok(context);
     }
 
+    [HttpDelete("/api/clients/{idClient}")]
+    public async Task<IActionResult> DeleteClientAsync(int idClient)
+    {
+        try
+        {
+            await _dbService.DeleteClientAsync(idClient);
+            return Ok("Client deleted");
+        }
+        catch (KeyNotFoundException e)
+        {
+            return NotFound(e.Message);
+        }
+        catch (InvalidOperationException e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
     [HttpPost("/api/trips/{idTrip}/clients")]
     public async Task<IActionResult> AddClientToTripAsync([FromRoute] int idTrip, [FromBody] ClientToTripDTO request)
     {

@@ -56,6 +56,21 @@ public class DbService : IDbService
         };
     }
 
+    public async Task DeleteClientAsync(int clientId)
+    {
+        var client = await _context.Clients.FindAsync(clientId);
+        if (client == null)
+        {
+            throw new Exception($"Client with id {clientId} not found");
+        }
+        if (await _context.ClientTrips.AnyAsync(ct => ct.IdClient == clientId))
+        {
+            throw new Exception($"Klient {clientId} ma przypisane wycieczki");
+        }
+        _context.Clients.Remove(client);
+        await _context.SaveChangesAsync();
+    }
+
     public async Task AddClientToTripAsync(int idTrip, ClientToTripDTO clientToTrip)
     {
         var client = await _context.Clients.FirstOrDefaultAsync(c => c.Pesel == clientToTrip.Pesel);
